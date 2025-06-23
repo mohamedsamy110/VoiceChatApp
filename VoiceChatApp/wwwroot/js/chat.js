@@ -9,56 +9,6 @@ const config = {
     iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
 };
 
-//function joinChat() {
-//    const username = document.getElementById('username').value;
-//    connection = new signalR.HubConnectionBuilder()
-//        .withUrl('/chatHub')
-//        .build();
-
-//    connection.start().then(() => {
-//        connection.invoke('JoinRoom', username);
-//    });
-
-//    connection.on('UserJoined', (id, name) => {
-//        if (!document.getElementById(id)) {
-//            const div = document.createElement('div');
-//            div.classList.add('user');
-//            div.id = id;
-//            div.innerHTML = `${name}
-//            <button onclick="call('${id}')">Call</button>
-//            <button onclick="endCall()">End Call</button>`;
-//            document.getElementById('users').appendChild(div);
-//        }
-//    });
-
-
-
-//    connection.on('UserLeft', (id) => {
-//        const div = document.getElementById(id);
-//        if (div) div.remove();
-//    });
-
-//    connection.on('ReceiveSignal', async (senderId, data) => {
-//        const signal = JSON.parse(data);
-
-//        if (signal.type === 'offer') {
-//            await startLocalStream();
-//            peerConnection = createPeerConnection(senderId);
-//            await peerConnection.setRemoteDescription(new RTCSessionDescription(signal));
-//            const answer = await peerConnection.createAnswer();
-//            await peerConnection.setLocalDescription(answer);
-//            connection.invoke('SendSignal', senderId, JSON.stringify(answer));
-//        }
-//        else if (signal.type === 'answer') {
-//            await peerConnection.setRemoteDescription(new RTCSessionDescription(signal));
-//        }
-//        else if (signal.candidate) {
-//            await peerConnection.addIceCandidate(new RTCIceCandidate(signal));
-//        }
-//    });
-//}
-
-
 
 function joinChat() {
     const username = document.getElementById('username').value;
@@ -98,7 +48,7 @@ function joinChat() {
     });
 
     connection.on('ReceiveSignal', async (senderId, data) => {
-        //...
+        
     });
 }
 
@@ -169,9 +119,6 @@ function createPeerConnection(targetId) {
     return pc;
 }
 
-//async function startLocalStream() {
-//    localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-//}
 
 
 async function startLocalStream() {

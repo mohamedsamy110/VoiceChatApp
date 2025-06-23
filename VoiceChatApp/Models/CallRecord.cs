@@ -9,7 +9,7 @@ namespace VoiceChatApp.Models
         public int Id { get; set; }
 
         public string User { get; set; }
-        public DateTime CallDate { get; set; } // ✅ تاريخ المكالمة الجديد
+        public DateTime CallDate { get; set; }
         public TimeSpan StartTime { get; set; }
         public TimeSpan? EndTime { get; set; }
 

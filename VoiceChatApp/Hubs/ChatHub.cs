@@ -1,42 +1,7 @@
-﻿
-
-//using Microsoft.AspNetCore.SignalR;
-//using System.Collections.Concurrent;
-
-//namespace VoiceChatApp.Hubs
-//{
-//    public class ChatHub : Hub
-//    {
-//        private static readonly ConcurrentDictionary<string, string> Users = new();
-
-//        public async Task JoinRoom(string username)
-//        {
-//            Users[Context.ConnectionId] = username;
-//            await Clients.Others.SendAsync("UserJoined", Context.ConnectionId, username);
-//        }
-
-//        public async Task SendSignal(string targetConnectionId, string signal)
-//        {
-//            await Clients.Client(targetConnectionId).SendAsync("ReceiveSignal", Context.ConnectionId, signal);
-//        }
-
-//        public override async Task OnDisconnectedAsync(Exception exception)
-//        {
-//            Users.TryRemove(Context.ConnectionId, out _);
-//            await Clients.Others.SendAsync("UserLeft", Context.ConnectionId);
-//        }
-//    }
-
-
-
-
-//}
-
-
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
-using VoiceChatApp.Models; // لازم تتأكد إن namespace بتاع الموديل CallRecord ده صح
-using VoiceChatApp.Data;   // ده اللي فيه ApplicationDbContext
+using VoiceChatApp.Models;
+using VoiceChatApp.Data;
 using System;
 
 namespace VoiceChatApp.Hubs
@@ -52,35 +17,17 @@ namespace VoiceChatApp.Hubs
             _context = context;
         }
 
-        //public async Task JoinRoom(string username)
-        //{
-        //    Users[Context.ConnectionId] = username;
-        //    Console.WriteLine($"==> JoinRoom called by {username} at {DateTime.Now}");
-
-        //    // حفظ البيانات في قاعدة البيانات
-        //    var call = new CallRecord
-        //    {
-        //        User = username,
-        //        StartTime = DateTime.Now
-        //    };
-
-        //    _context.CallRecords.Add(call);
-        //    await _context.SaveChangesAsync();
-
-        //    await Clients.Others.SendAsync("UserJoined", Context.ConnectionId, username);
-        //}
 
         public async Task JoinRoom(string username)
         {
             Users[Context.ConnectionId] = username;
             Console.WriteLine($"==> JoinRoom called by {username} at {DateTime.Now}");
 
-            // ✅ تحديث لحفظ التاريخ والوقت
             var call = new CallRecord
             {
                 User = username,
-                CallDate = DateTime.UtcNow.Date, // ✅ حفظ التاريخ فقط
-                StartTime = DateTime.UtcNow.TimeOfDay // ✅ حفظ الوقت فقط
+                CallDate = DateTime.UtcNow.Date,
+                StartTime = DateTime.UtcNow.TimeOfDay
             };
 
             _context.CallRecords.Add(call);
@@ -96,35 +43,6 @@ namespace VoiceChatApp.Hubs
             await Clients.Client(targetConnectionId).SendAsync("ReceiveSignal", Context.ConnectionId, signal);
         }
 
-        //public override async Task OnDisconnectedAsync(Exception exception)
-        //{
-        //    Users.TryRemove(Context.ConnectionId, out _);
-        //    await Clients.Others.SendAsync("UserLeft", Context.ConnectionId);
-        //}
-
-        //public override async Task OnDisconnectedAsync(Exception exception)
-        //{
-        //    if (Users.TryRemove(Context.ConnectionId, out var username))
-        //    {
-        //        var call = _context.CallRecords
-        //                    .Where(c => c.User == username && c.EndTime == null)
-        //                    .OrderByDescending(c => c.StartTime)
-        //                    .FirstOrDefault();
-
-        //        if (call != null)
-        //        {
-        //            call.EndTime = DateTime.Now;
-        //            call.Duration = call.EndTime - call.StartTime;
-
-        //            await _context.SaveChangesAsync();
-        //        }
-
-        //        await Clients.Others.SendAsync("UserLeft", Context.ConnectionId);
-        //    }
-
-        //    await base.OnDisconnectedAsync(exception);
-        //}
-
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             if (Users.TryRemove(Context.ConnectionId, out var username))
@@ -136,7 +54,7 @@ namespace VoiceChatApp.Hubs
 
                 if (call != null)
                 {
-                    call.EndTime = DateTime.UtcNow.TimeOfDay; // ✅ حفظ الوقت فقط
+                    call.EndTime = DateTime.UtcNow.TimeOfDay;
                     call.Duration = call.EndTime - call.StartTime;
 
                     await _context.SaveChangesAsync();

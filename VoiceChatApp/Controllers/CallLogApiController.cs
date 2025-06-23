@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using VoiceChatApp.Models; // لو CallRecord موجود في Models
-using VoiceChatApp.Data;   // مكان ApplicationDbContext
+using VoiceChatApp.Models;
+using VoiceChatApp.Data;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,35 +17,7 @@ namespace VoiceChatApp.Controllers
             _context = context;
         }
 
-        //[HttpGet]
-        //public IActionResult GetCallLogs()
-        //{
-        //    var logs = _context.CallRecords.ToList();
-        //    return Ok(logs);
-        //}
-
-        //[HttpGet]
-        //public async Task<IActionResult> GetCallLogs()
-        //{
-        //    var logs = await _context.CallRecords.OrderByDescending(c => c.StartTime).ToListAsync();
-        //    return Ok(logs);
-        //}
-
-        //[HttpGet]
-        //public async Task<IActionResult> GetCallLogs()
-        //{
-        //    var logs = await _context.CallRecords
-        //        .OrderByDescending(c => c.StartTime)
-        //        .Select(c => new
-        //        {
-        //            user = c.User,
-        //            startTime = c.StartTime,
-        //            endTime = c.EndTime
-        //        })
-        //        .ToListAsync();
-
-        //    return Ok(logs);
-        //}
+        
 
         [HttpGet]
         public async Task<IActionResult> GetCallLogs()
@@ -56,7 +28,7 @@ namespace VoiceChatApp.Controllers
                 .Select(c => new
                 {
                     user = c.User,
-                    date = c.CallDate, // ✅ التاريخ منفصل
+                    date = c.CallDate,
                     startTime = c.StartTime,
                     endTime = c.EndTime,
                     duration = c.Duration.HasValue ? $"{c.Duration.Value.TotalMinutes:F1} دقائق" : "جارية"
