@@ -1,0 +1,286 @@
+﻿@* @page
+@model VoiceChatApp.Pages.CallLogModel
+@{
+    ViewData["Title"] = "Call Log";
+}
+
+<h2>Call History</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Duration (Minutes)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var call in Model.CallHistory)
+        {
+            <tr>
+                <td>@call.User</td>
+                <td>@call.StartTime.ToString("HH:mm:ss")</td>
+                <td>@call.EndTime.ToString("HH:mm:ss")</td>
+                <td>@call.Duration</td>
+            </tr>
+        }
+    </tbody>
+</table>
+ *@
+
+@* 
+ @page
+@model CallLogModel
+
+<h2>📞 سجل المكالمات</h2>
+<table border="1" id="callLogTable">
+    <thead>
+        <tr>
+            <th>🧑‍🤝‍🧑 المستخدم</th>
+            <th>⏱️ وقت البدء</th>
+            <th>⏲️ وقت الانتهاء</th>
+            <th>⏳ مدة المكالمة</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- هنا هيتملوا من JavaScript -->
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        async function loadCallLog() {
+            try {
+                const response = await fetch('/api/CallLogApi');
+                const data = await response.json();
+
+                const tableBody = document.querySelector('#callLogTable tbody');
+                tableBody.innerHTML = '';
+
+                data.forEach(log => {
+                    const startTime = new Date(log.startTime);
+                    const endTime = log.endTime ? new Date(log.endTime) : null;
+                    const duration = endTime ? ((endTime - startTime) / 1000).toFixed(0) + ' ثانية' : 'جارية';
+
+                    const row = `
+                        <tr>
+                            <td>${log.user}</td>
+                            <td>${startTime.toLocaleString()}</td>
+                            <td>${endTime ? endTime.toLocaleString() : '---'}</td>
+                            <td>${duration}</td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error("فشل تحميل السجل:", error);
+            }
+        }
+
+        window.onload = loadCallLog;
+    </script>
+}
+ *@
+
+
+
+
+
+
+@* @page
+@model CallLogModel
+
+<h2>📞 سجل المكالمات</h2>
+<table border="1" id="callLogTable">
+    <thead>
+        <tr>
+            <th>🧑‍🤝‍🧑 المستخدم</th>
+            <th>📅 التاريخ</th>
+            <th>⏱️ وقت البدء</th>
+            <th>⏲️ وقت الانتهاء</th>
+            <th>⏳ مدة المكالمة</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- سيتم تعبئتها عبر JavaScript -->
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        async function loadCallLog() {
+            try {
+                const response = await fetch('/api/CallLogApi');
+                const data = await response.json();
+
+                const tableBody = document.querySelector('#callLogTable tbody');
+                tableBody.innerHTML = '';
+
+                data.forEach(log => {
+                    const row = `
+                        <tr>
+                            <td>${log.user}</td>
+                            <td>${new Date(log.date).toLocaleDateString()}</td>
+                            <td>${log.startTime}</td>
+                            <td>${log.endTime || '---'}</td>
+                            <td>${log.duration}</td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error("فشل تحميل السجل:", error);
+            }
+        }
+
+        window.onload = loadCallLog;
+    </script>
+} *@
+
+
+
+
+
+
+@* 
+@page
+@model CallLogModel
+
+<h2>📞 سجل المكالمات</h2>
+<table border="1" id="callLogTable">
+    <thead>
+        <tr>
+            <th>🧑🏻‍💻 المستخدم</th>
+            <th style="width: 150px;">📅 التاريخ</th>
+            <th style="width: 150px;">⏱️ وقت البدء</th> <!-- ✅ توسيع العمود -->
+            <th style="width: 150px;">⏲️ وقت الانتهاء</th> <!-- ✅ توسيع العمود -->
+            <th>⏳ مدة المكالمة</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- سيتم تعبئتها عبر JavaScript -->
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        function formatTime(timeString) {
+            const time = new Date(`1970-01-01T${timeString}`);
+            return time.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        }
+
+        async function loadCallLog() {
+            try {
+                const response = await fetch('/api/CallLogApi');
+                const data = await response.json();
+
+                const tableBody = document.querySelector('#callLogTable tbody');
+                tableBody.innerHTML = '';
+
+                data.forEach(log => {
+                    const startTimeFormatted = formatTime(log.startTime);
+                    const endTimeFormatted = log.endTime ? formatTime(log.endTime) : '---';
+                    const durationFormatted = log.duration ? parseFloat(log.duration).toFixed(2) + ' دقيقة' : 'جارية';
+
+                    const row = `
+                        <tr>
+                            <td>${log.user}</td>
+                            <td>${new Date(log.date).toLocaleDateString()}</td>
+                            <td>${startTimeFormatted}</td> <!-- ✅ تحويل الوقت إلى 12 ساعة -->
+                            <td>${endTimeFormatted}</td> <!-- ✅ تحويل الوقت إلى 12 ساعة -->
+                            <td>${durationFormatted}</td> <!-- ✅ تقليل الأرقام بعد الفاصلة -->
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error("فشل تحميل السجل:", error);
+            }
+        }
+
+        window.onload = loadCallLog;
+    </script>
+} *@
+
+
+
+
+
+
+
+
+
+
+
+@page
+@model CallLogModel
+
+<h2 style="color: #0044cc; text-align: center;">📞 سجل المكالمات</h2>
+
+@* <div style="background-color: #f0f8ff; padding: 20px; border-radius: 10px;">
+ *@
+<div style="background-color: #f0f8ff; padding: 20px; border-radius: 10px; border: 2px solid #0044cc; box-shadow: 2px 2px 10px rgba(0, 68, 204, 0.2);">
+    <div style="background-color: #f0f8ff; padding: 20px; border-radius: 10px; border: 2px solid #0044cc; box-shadow: 2px 2px 10px rgba(0, 68, 204, 0.2);">
+        <table border="1" id="callLogTable" style="width: 100%; border-collapse: collapse; text-align: center; background-color: #ffffff; border: 2px solid #0044cc;">
+    <table border="1" id="callLogTable" style="width: 100%; border-collapse: collapse; text-align: center; background-color: #ffffff;">
+        <thead style="background-color: #0044cc; color: white;">
+            <tr>
+                <th style="padding: 10px;">🧑🏻‍💻 المستخدم</th>
+                <th style="padding: 10px; width: 150px;">📅 التاريخ</th>
+                <th style="padding: 10px; width: 150px;">⏱️ وقت البدء</th>
+                <th style="padding: 10px; width: 150px;">⏲️ وقت الانتهاء</th>
+                <th style="padding: 10px;">⏳ مدة المكالمة</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- سيتم تعبئتها عبر JavaScript -->
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        function formatTime(timeString) {
+            const time = new Date(`1970-01-01T${timeString}`);
+            return time.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        }
+
+        async function loadCallLog() {
+            try {
+                const response = await fetch('/api/CallLogApi');
+                const data = await response.json();
+
+                const tableBody = document.querySelector('#callLogTable tbody');
+                tableBody.innerHTML = '';
+
+                data.forEach(log => {
+                    const startTimeFormatted = formatTime(log.startTime);
+                    const endTimeFormatted = log.endTime ? formatTime(log.endTime) : '---';
+                    const durationFormatted = log.duration ? parseFloat(log.duration).toFixed(2) + ' دقيقة' : 'جارية';
+
+                    const row = `
+                        <tr style="border-bottom: 1px solid #ddd;">
+                            <td style="padding: 10px;">${log.user}</td>
+                            <td style="padding: 10px;">${new Date(log.date).toLocaleDateString()}</td>
+                            <td style="padding: 10px;">${startTimeFormatted}</td>
+                            <td style="padding: 10px;">${endTimeFormatted}</td>
+                            <td style="padding: 10px;">${durationFormatted}</td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error("فشل تحميل السجل:", error);
+            }
+        }
+
+        window.onload = loadCallLog;
+    </script>
+
+    <style>
+        tr:hover {
+            background-color: #e0f2ff; /* ✅ تأثير Hover لجعل الجدول أكثر تفاعلًا */
+        }
+    </style>
+}
